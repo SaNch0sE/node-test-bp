@@ -1,0 +1,42 @@
+{
+    "name": "node-test-bp",
+    "version": "0.0.1",
+    "main": "./src/server/index.js",
+    "keywords": [
+        "node",
+        "nodejs",
+        "rest",
+        "restfull",
+        "api",
+        "javascript"
+    ],
+    "description": "Made with yeomen generator 'generator-node-express-fast-progress'.",
+    "author": "Alex Boiko <alex.boiko.2001@gmail.com>",
+    "scripts": {
+        "start": "node src/server/index.js"
+    },
+    "dependencies": {
+        "@hapi/joi": "17.1.0",
+        "bcrypt": "^4.0.1",
+        "body-parser": "1.18.2",
+        "compression": "1.7.1",
+        "cookie-parser": "1.4.3",
+        "cors": "2.8.5",
+        "dotenv": "^8.2.0",
+        "express": "4.16.2",
+        "helmet": "^3.22.0",
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "5.7.5",
+        "request": "^2.88.2"
+    },
+    "devDependencies": {
+        "eslint": "6.8.0",
+        "eslint-config-airbnb": "18.0.1",
+        "eslint-config-airbnb-base": "14.0.0",
+        "eslint-config-prettier": "6.10.0",
+        "eslint-plugin-import": "2.20.1",
+        "eslint-plugin-node": "11.0.0",
+        "eslint-plugin-prettier": "3.1.2",
+        "nodemon": "^2.0.4"
+    }
+}
