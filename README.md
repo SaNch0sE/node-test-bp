@@ -1,4 +1,4 @@
-REST API server with bearer token auth.
+# REST API server with bearer token auth.
 DB - mongodb.
 
 API (JSON): 
