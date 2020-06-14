@@ -1,6 +1,5 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const { verifyToken, updUserToken } = require('./User/service');
 
 /**
  * @function
@@ -21,10 +20,6 @@ function getToken(data, time) {
 async function verify(tokens) {
     try {
         const refresh = jwt.verify(tokens.refresh, process.env.KEY);
-        const checked = await verifyToken(refresh.id);
-        if (tokens.refresh !== checked.refresh) {
-            throw Error('invalid refresh token');
-        }
         try {
             const access = jwt.verify(tokens.access, process.env.KEY);
             if (access && refresh) {
@@ -37,7 +32,7 @@ async function verify(tokens) {
         }
     // else
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         return { status: 2 };
     }
     return true;

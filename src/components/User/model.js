@@ -15,10 +15,6 @@ const UserSchema = new Schema(
             type: String,
             required: true,
         },
-        refresh: {
-            type: String,
-            required: true,
-        },
     },
     {
         collection: 'users',

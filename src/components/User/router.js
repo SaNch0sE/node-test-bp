@@ -10,7 +10,7 @@ const router = Router();
 
 /**
  * Route serving a user info
- * @name /v1/users/:id
+ * @name /info
  * @function
  * @inner
  * @param {string} path - Express path
@@ -19,8 +19,8 @@ const router = Router();
 router.get('/info', UserComponent.info);
 
 /**
- * Route for login
- * @name /v1/users
+ * Route serving latency from server to google.com
+ * @name /latency
  * @function
  * @inner
  * @param {string} path - Express path
@@ -30,7 +30,7 @@ router.get('/latency', UserComponent.latency);
 
 /**
  * Route serving a new user
- * @name /v1/users
+ * @name /signup
  * @function
  * @inner
  * @param {string} path - Express path
@@ -40,7 +40,7 @@ router.post('/signup', UserComponent.signup);
 
 /**
  * Route for login
- * @name /v1/users
+ * @name /signin
  * @function
  * @inner
  * @param {string} path - Express path
@@ -49,8 +49,8 @@ router.post('/signup', UserComponent.signup);
 router.post('/signin', UserComponent.signin);
 
 /**
- * Route for login
- * @name /v1/users
+ * Route for logout
+ * @name /logout
  * @function
  * @inner
  * @param {string} path - Express path

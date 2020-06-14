@@ -2,9 +2,9 @@ const UserModel = require('./model');
 
 /**
  * @exports
- * @method hash
+ * @method info
  * @param {string} id
- * @summary get a user
+ * @summary get a user info
  * @returns {Promise<UserModel>}
  */
 function info(id) {
@@ -19,7 +19,7 @@ function info(id) {
  * @exports
  * @method hash
  * @param {string} id
- * @summary get a user
+ * @summary get a user password hash
  * @returns {Promise<UserModel>}
  */
 function hash(id) {
@@ -32,20 +32,24 @@ function hash(id) {
 
 /**
  * @exports
- * @method create
+ * @method signup
  * @param {object} profile
  * @summary create a new user
  * @returns {Promise<UserModel>}
  */
-function signup(profile) {
-    return UserModel.create(profile);
+async function signup(profile) {
+    const user = await UserModel.exists({ id: profile.id });
+    if (user !== true) {
+        return UserModel.create(profile);
+    }
+    return 0;
 }
 
 /**
  * @exports
- * @method create
+ * @method signin
  * @param {object} profile
- * @summary create a new user
+ * @summary Checking user existence
  * @returns {Promise<UserModel>}
  */
 function signin(profile) {
@@ -57,50 +61,9 @@ function signin(profile) {
     });
 }
 
-/**
- * @exports
- * @method create
- * @param {object} profile
- * @summary create a new user
- * @returns {Promise<UserModel>}
- */
-function updUserToken(id, refresh) {
-    return UserModel.updateOne({ id }, { refresh }).exec();
-}
-
-/**
- * @exports
- * @method create
- * @param {object} profile
- * @summary create a new user
- * @returns {Promise<UserModel>}
- */
-function cleanTokens() {
-    return UserModel.updateMany({}, { refresh: 0 }).exec();
-}
-
-/**
- * @exports
- * @method hash
- * @param {string} id
- * @summary get a user
- * @returns {Promise<UserModel>}
- */
-function verifyToken(id) {
-    return UserModel.findOne({ id }).select({
-        _id: 0,
-        password: 0,
-        id: 0,
-        id_type: 0,
-    }).exec();
-}
-
 module.exports = {
     info,
     hash,
     signup,
     signin,
-    cleanTokens,
-    updUserToken,
-    verifyToken,
 };

@@ -4,8 +4,13 @@ const UserService = require('./service');
 const UserValidation = require('./validation');
 const ValidationError = require('../../error/ValidationError');
 const jwt = require('../auth');
+require('dotenv').config();
 
-const saltRounds = 10;
+/**
+ * Time for access and refresh tokens or cookies
+ * @type {Object}
+ * @const
+ */
 const time = {
     access: '10m',
     refresh: '24h',
@@ -14,34 +19,23 @@ const time = {
 };
 
 /**
+ * Salt rounds for bcrypt generator
+ * @type {Number}
+ * @const
+ */
+const saltRounds = 10;
+
+/**
  * @function
  * @param {express.Request} req
  * @param {express.Response} res
  * @param {express.NextFunction} next
+ * @summary send user info
  * @returns {Promise < void >}
  */
 async function info(req, res, next) {
     try {
-        const payload = await jwt.verify(req.cookies);
-        const data = { id: payload.data };
-        if (payload.status === 1) {
-            const access = jwt.getToken(data, time.access);
-            res.cookie('access', access, { maxAge: time.cookieAcc, httpOnly: true });
-            return res.redirect(307, '/info');
-        }
-        if (payload.status === 2) {
-            return res.status(200).json({
-                error: 'Please login first',
-                details: 'Refresh token expired',
-            });
-        }
-
-        const access = jwt.getToken(data, time.access);
-        const refresh = jwt.getToken(data, time.refresh);
-        res.cookie('access', access, { maxAge: time.cookieAcc, httpOnly: true });
-        res.cookie('refresh', refresh, { maxAge: time.cookieRef, httpOnly: true });
-        await UserService.updUserToken(payload.data, refresh);
-        const user = await UserService.info(payload.data, refresh);
+        const user = await UserService.info(req.payloadData);
 
         return res.status(200).json({
             data: user,
@@ -68,30 +62,11 @@ async function info(req, res, next) {
  * @param {express.Request} req
  * @param {express.Response} res
  * @param {express.NextFunction} next
+ * @summary send latency to google.com from server
  * @returns {Promise < void >}
  */
 async function latency(req, res, next) {
     try {
-        const payload = await jwt.verify(req.cookies);
-        const data = { id: payload.data };
-        if (payload.status === 1) {
-            const access = jwt.getToken(data, time.access);
-            res.cookie('access', access, { maxAge: time.cookieAcc, httpOnly: true });
-            return res.redirect(307, '/info');
-        }
-        if (payload.status === 2) {
-            return res.status(200).json({
-                error: 'Please login first',
-                details: 'Refresh token expired',
-            });
-        }
-
-        const access = jwt.getToken(data, time.access);
-        const refresh = jwt.getToken(data, time.refresh);
-        res.cookie('access', access, { maxAge: time.cookieAcc, httpOnly: true });
-        res.cookie('refresh', refresh, { maxAge: time.cookieRef, httpOnly: true });
-        await UserService.updUserToken(data.id, refresh);
-
         request({
             uri: 'https://google.com',
             method: 'GET',
@@ -128,6 +103,7 @@ async function latency(req, res, next) {
  * @param {express.Request} req
  * @param {express.Response} res
  * @param {express.NextFunction} next
+ * @summary sign up a new user
  * @returns {Promise < void >}
  */
 async function signup(req, res, next) {
@@ -149,8 +125,11 @@ async function signup(req, res, next) {
         const hash = bcrypt.hashSync(req.body.password, saltRounds);
         const user = req.body;
         user.password = hash;
+        user.refresh = hash;
         const data = { user: await UserService.signup(user) };
-
+        if (data.user === 0) {
+            data.user = 'User already exist';
+        }
         return res.status(200).json({
             data,
         });
@@ -176,6 +155,7 @@ async function signup(req, res, next) {
  * @param {express.Request} req
  * @param {express.Response} res
  * @param {express.NextFunction} next
+ * @summary sign in (log in) user
  * @returns {Promise < void >}
  */
 async function signin(req, res, next) {
@@ -187,16 +167,15 @@ async function signin(req, res, next) {
         }
 
         let signIn = 'Failed, invalid input data';
-        const data = { id: req.body.id };
 
         const hash = await UserService.hash(req.body.id);
 
-        if (bcrypt.compareSync(req.body.password, hash.password) === true) {
+        if (hash && bcrypt.compareSync(req.body.password, hash.password) === true) {
+            const data = { id: req.body.id };
             const access = jwt.getToken(data, time.access);
             const refresh = jwt.getToken(data, time.refresh);
             res.cookie('access', access, { maxAge: time.cookieAcc, httpOnly: true });
             res.cookie('refresh', refresh, { maxAge: time.cookieRef, httpOnly: true });
-            await UserService.updUserToken(data.id, refresh);
             signIn = 'Success';
         }
 
@@ -225,6 +204,7 @@ async function signin(req, res, next) {
  * @param {express.Request} req
  * @param {express.Response} res
  * @param {express.NextFunction} next
+ * @summary logout current or all users
  * @returns {Promise < void >}
  */
 async function logout(req, res, next) {
@@ -235,34 +215,14 @@ async function logout(req, res, next) {
             throw new ValidationError(error.details);
         }
 
-        const payload = await jwt.verify(req.cookies);
-        const data = { id: payload.data };
-        if (payload.status === 1) {
-            const access = jwt.getToken(data, time.access);
-            res.cookie('access', access, { maxAge: time.cookieAcc, httpOnly: true });
-            return res.redirect(307, '/info');
-        }
-        if (payload.status === 2) {
-            return res.status(200).json({
-                error: 'Please login first',
-                details: 'Refresh token expired',
-            });
-        }
-
-        let all = false;
-        if (req.query.all === 'false') {
-            await UserService.updUserToken(data.id, 0);
-            res.cookie('access', 0, { maxAge: 0, httpOnly: true });
-            res.cookie('refresh', 0, { maxAge: 0, httpOnly: true });
-        } else {
-            await UserService.cleanTokens();
-            res.cookie('access', 0, { maxAge: 0, httpOnly: true });
-            res.cookie('refresh', 0, { maxAge: 0, httpOnly: true });
-            all = true;
+        res.cookie('access', 0, { maxAge: 0, httpOnly: true });
+        res.cookie('refresh', 0, { maxAge: 0, httpOnly: true });
+        if (req.query.all === 'true') {
+            process.env.KEY = bcrypt.hashSync(`${new Date().getTime()}_public-Key`, 5);
         }
 
         return res.status(200).json({
-            data: { all },
+            data: { all: req.query.all },
         });
     } catch (error) {
         if (error instanceof ValidationError) {
