@@ -45,25 +45,8 @@ async function signup(profile) {
     return 0;
 }
 
-/**
- * @exports
- * @method signin
- * @param {object} profile
- * @summary Checking user existence
- * @returns {Promise<UserModel>}
- */
-function signin(profile) {
-    return UserModel.count(profile, (err, count) => {
-        if (count > 0) {
-            return 'exist';
-        }
-        return 0;
-    });
-}
-
 module.exports = {
     info,
     hash,
     signup,
-    signin,
 };

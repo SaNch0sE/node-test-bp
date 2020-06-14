@@ -3,7 +3,7 @@ const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const helmet = require('helmet');
-const auth = require('../components/Auth').tokensMiddleware;
+const auth = require('../components/TokensMiddleware').tokensMiddleware;
 
 module.exports = {
     /**

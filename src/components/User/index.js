@@ -166,8 +166,8 @@ async function signin(req, res, next) {
             throw new ValidationError(error.details);
         }
 
-        let signIn = 'Failed, invalid input data';
-
+        let token = null;
+        let status = 'Failed, invalid input data';
         const hash = await UserService.hash(req.body.id);
 
         if (hash && bcrypt.compareSync(req.body.password, hash.password) === true) {
@@ -176,11 +176,13 @@ async function signin(req, res, next) {
             const refresh = jwt.getToken(data, time.refresh);
             res.cookie('access', access, { maxAge: time.cookieAcc, httpOnly: true });
             res.cookie('refresh', refresh, { maxAge: time.cookieRef, httpOnly: true });
-            signIn = 'Success';
+            token = access;
+            status = 'OK';
         }
 
         return res.status(200).json({
-            signIn,
+            status,
+            token,
         });
     } catch (error) {
         if (error instanceof ValidationError) {

@@ -13,7 +13,8 @@
     "description": "Made with yeomen generator 'generator-node-express-fast-progress'.",
     "author": "Alex Boiko <alex.boiko.2001@gmail.com>",
     "scripts": {
-        "start": "node src/server/index.js"
+        "start": "node src/server/index.js",
+        "test": "npx mocha ./__test__ --exit "
     },
     "dependencies": {
         "@hapi/joi": "17.1.0",
@@ -30,6 +31,9 @@
         "request": "^2.88.2"
     },
     "devDependencies": {
+        "chai": "^4.2.0",
+        "chai-fs": "2.0.0",
+        "chai-http": "^4.3.0",
         "eslint": "6.8.0",
         "eslint-config-airbnb": "18.0.1",
         "eslint-config-airbnb-base": "14.0.0",
@@ -37,6 +41,9 @@
         "eslint-plugin-import": "2.20.1",
         "eslint-plugin-node": "11.0.0",
         "eslint-plugin-prettier": "3.1.2",
-        "nodemon": "^2.0.4"
+        "mocha": "^8.0.1",
+        "mongodb-memory-server": "^6.6.1",
+        "nodemon": "^2.0.4",
+        "supertest": "^4.0.2"
     }
 }
