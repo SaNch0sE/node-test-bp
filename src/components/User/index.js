@@ -43,7 +43,7 @@ async function info(req, res, next) {
     } catch (error) {
         if (error instanceof ValidationError) {
             return res.status(422).json({
-                error: error.name,
+                message: error.name,
                 details: error.message,
             });
         }
@@ -84,7 +84,7 @@ async function latency(req, res, next) {
     } catch (error) {
         if (error instanceof ValidationError) {
             return res.status(422).json({
-                error: error.name,
+                message: error.name,
                 details: error.message,
             });
         }

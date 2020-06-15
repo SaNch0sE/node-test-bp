@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const MONGODB_URI = `mongodb+srv://dbAdmin:${process.env.DB_PASSWORD}@cluster0-ufa7f.mongodb.net/`;
+const MONGODB_URI = `mongodb+srv://dbUser:${process.env.DB_PASSWORD}@cluster0-ufa7f.mongodb.net/`;
 const MONGODB_DB_MAIN = 'users_db';
 const MONGO_URI = `${MONGODB_URI}${MONGODB_DB_MAIN}`;
 

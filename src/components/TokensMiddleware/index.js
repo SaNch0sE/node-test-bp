@@ -27,8 +27,8 @@ module.exports = {
             }
             // all tokens expired
             if (payload.status === 2) {
-                return res.status(200).json({
-                    error: 'Please login first',
+                return res.status(401).json({
+                    message: 'Please login first',
                     details: 'Refresh token expired',
                 });
             }

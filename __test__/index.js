@@ -12,4 +12,5 @@ require('./tests/UserService.test.js');
 // **************************
 // * CONTROLLERS (ROUTES)
 // **************************
-require('./tests/User.test');
+require('./tests/User.positive.test');
+require('./tests/User.negative.test');
