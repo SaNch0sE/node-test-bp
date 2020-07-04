@@ -1,5 +1,6 @@
 const { Router } = require('express');
-const UserComponent = require('../User');
+const controller = require('../controller');
+const verifyToken = require('./middleware/verifyToken');
 
 /**
  * Express router to mount user related functions on.
@@ -16,7 +17,7 @@ const router = Router();
  * @param {string} path - Express path
  * @param {callback} middleware - Express middleware.
  */
-router.get('/info', UserComponent.info);
+router.get('/info', verifyToken, controller.info);
 
 /**
  * Route serving latency from server to google.com
@@ -26,7 +27,7 @@ router.get('/info', UserComponent.info);
  * @param {string} path - Express path
  * @param {callback} middleware - Express middleware
  */
-router.get('/latency', UserComponent.latency);
+router.get('/latency', verifyToken, controller.latency);
 
 /**
  * Route serving a new user
@@ -36,7 +37,7 @@ router.get('/latency', UserComponent.latency);
  * @param {string} path - Express path
  * @param {callback} middleware - Express middleware
  */
-router.post('/signup', UserComponent.signup);
+router.post('/signup', controller.signUp);
 
 /**
  * Route for login
@@ -46,7 +47,7 @@ router.post('/signup', UserComponent.signup);
  * @param {string} path - Express path
  * @param {callback} middleware - Express middleware
  */
-router.post('/signin', UserComponent.signin);
+router.post('/signin', controller.signIn);
 
 /**
  * Route for logout
@@ -56,6 +57,8 @@ router.post('/signin', UserComponent.signin);
  * @param {string} path - Express path
  * @param {callback} middleware - Express middleware
  */
-router.get('/logout', UserComponent.logout);
+router.get('/logout', verifyToken, controller.logout);
 
-module.exports = router;
+module.exports = {
+	router,
+};
