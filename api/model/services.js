@@ -9,11 +9,11 @@ require('dotenv').config();
  * @returns {Promise<UserModel>}
  */
 function info(id) {
-	return UserModel.findOne({ id }).select({
-		_id: 0,
-		password: 0,
-		refresh: 0,
-	}).exec();
+    return UserModel.findOne({ id }).select({
+        _id: 0,
+        password: 0,
+        refresh: 0,
+    }).exec();
 }
 
 /**
@@ -24,11 +24,11 @@ function info(id) {
  * @returns {Promise<UserModel>}
  */
 function hash(id) {
-	return UserModel.findOne({ id }).select({
-		_id: 0,
-		id: 0,
-		id_type: 0,
-	}).exec();
+    return UserModel.findOne({ id }).select({
+        _id: 0,
+        id: 0,
+        id_type: 0,
+    }).exec();
 }
 
 /**
@@ -39,11 +39,11 @@ function hash(id) {
  * @returns {Promise<UserModel>}
  */
 async function signup(profile) {
-	return UserModel.create(profile);
+    return UserModel.create(profile);
 }
 
 module.exports = {
-	info,
-	hash,
-	signup,
+    info,
+    hash,
+    signup,
 };

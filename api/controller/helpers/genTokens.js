@@ -8,12 +8,12 @@ const { TIME, KEY } = require('../../../config/config');
  * @returns {object}
  */
 function genTokens(data) {
-	const access = jwt.sign(data, KEY, { expiresIn: TIME.access });
-	const refresh = jwt.sign(data, KEY, { expiresIn: TIME.refresh });
-	return {
-		access,
-		refresh,
-	};
+    const access = jwt.sign(data, KEY, { expiresIn: TIME.access });
+    const refresh = jwt.sign(data, KEY, { expiresIn: TIME.refresh });
+    return {
+        access,
+        refresh,
+    };
 }
 
 module.exports = genTokens;

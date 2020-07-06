@@ -16,12 +16,12 @@ const { saltRounds, TIME } = require('../../config/config');
  * @returns {Promise < void >}
  */
 async function info(req, res, next) {
-	const user = await service.info(req.user);
-	res.status(200).json({
-		data: user,
-	});
+    const user = await service.info(req.user);
+    res.status(200).json({
+        data: user,
+    });
 
-	return next();
+    return next();
 }
 
 /**
@@ -34,19 +34,19 @@ async function info(req, res, next) {
  * @returns {Promise < void >}
  */
 async function latency(req, res, next) {
-	const startTimer = Date.now();
-	try {
-		await axios.get('https://google.com/');
-	} catch (e) {
-		return next(e);
-	}
-	const lat = Date.now() - startTimer;
-	res.status(200).json({
-		data: {
-			latency: lat,
-		},
-	});
-	return next();
+    const startTimer = Date.now();
+    try {
+        await axios.get('https://google.com/');
+    } catch (e) {
+        return next(e);
+    }
+    const lat = Date.now() - startTimer;
+    res.status(200).json({
+        data: {
+            latency: lat,
+        },
+    });
+    return next();
 }
 
 /**
@@ -60,26 +60,20 @@ async function latency(req, res, next) {
  * @returns {Promise < void >}
  */
 async function signUp(req, res, next) {
-	const { error } = validate.signup(req.body);
+    const { error } = validate.signUp(req.body);
 
-	if (error) {
-		return next(error);
-	}
-	const user = req.body;
+    if (error) {
+        return next(error);
+    }
+    const user = req.body;
 
-	user.id_type = checkIdType(user.id);
-	user.password = bcrypt.hashSync(user.password, saltRounds);
+    user.id_type = checkIdType(user.id);
+    user.password = bcrypt.hashSync(user.password, saltRounds);
 
-	const data = await service.signup(user).catch((e) => next(e));
-	const tokens = genTokens({ id: req.body.id });
-	res.cookie('access', tokens.access, { maxAge: TIME.cookieAcc, httpOnly: true });
-	res.cookie('refresh', tokens.refresh, { maxAge: TIME.cookieRef, httpOnly: true });
-	res.status(200).json({
-		token: tokens.access,
-		user: data,
-	});
+    await service.signup(user).catch((e) => next(e));
+    res.redirect(307, '/signin');
 
-	return next();
+    return next();
 }
 
 /**
@@ -92,33 +86,33 @@ async function signUp(req, res, next) {
  * @returns {Promise < void >}
  */
 async function signIn(req, res, next) {
-	const { error } = validate.signin(req.body);
+    const { error } = validate.signIn(req.body);
 
-	if (error) {
-		return next(error);
-	}
+    if (error) {
+        return next(error);
+    }
 
-	const response = {
-		statusCode: 400,
-		status: 'Failed, invalid input data',
-	};
-	const user = await service.hash(req.body.id);
-	if (user != null) {
-		const compared = bcrypt.compareSync(req.body.password, user.password);
-		if (compared) {
-			const tokens = genTokens({ id: req.body.id });
-			res.cookie('access', tokens.access, { maxAge: TIME.cookieAcc, httpOnly: true });
-			res.cookie('refresh', tokens.refresh, { maxAge: TIME.cookieRef, httpOnly: true });
-			response.statusCode = 200;
-			response.token = tokens.access;
-			response.status = 'OK';
-		}
-	} else {
-		response.status = "Failed, user doesn't exist";
-	}
+    const response = {
+        statusCode: 400,
+        status: 'Failed, invalid input data',
+    };
+    const user = await service.hash(req.body.id);
+    if (user != null) {
+        const compared = bcrypt.compareSync(req.body.password, user.password);
+        if (compared) {
+            const tokens = genTokens({ id: req.body.id });
+            res.cookie('access', tokens.access, { maxAge: TIME.cookieAcc, httpOnly: true });
+            res.cookie('refresh', tokens.refresh, { maxAge: TIME.cookieRef, httpOnly: true });
+            response.statusCode = 200;
+            response.token = tokens.access;
+            response.status = 'OK';
+        }
+    } else {
+        response.status = "Failed, user doesn't exist";
+    }
 
-	res.status(response.statusCode).json(response);
-	return next();
+    res.status(response.statusCode).json(response);
+    return next();
 }
 
 /**
@@ -130,29 +124,29 @@ async function signIn(req, res, next) {
  * @returns {Promise < void >}
  */
 async function logout(req, res, next) {
-	const { error } = validate.logout(req.query);
+    const { error } = validate.logout(req.query);
 
-	if (error) {
-		return next(error);
-	}
+    if (error) {
+        return next(error);
+    }
 
-	res.cookie('access', 'none', { maxAge: 0, httpOnly: true });
-	res.cookie('refresh', 'none', { maxAge: 0, httpOnly: true });
-	if (req.query.all === 'true') {
-		process.env.KEY = bcrypt.hashSync(`${new Date().getTime()}_private-Key`, 10);
-	}
+    res.cookie('access', 'none', { maxAge: 0, httpOnly: true });
+    res.cookie('refresh', 'none', { maxAge: 0, httpOnly: true });
+    if (req.query.all === 'true') {
+        process.env.KEY = bcrypt.hashSync(`${new Date().getTime()}_private-Key`, 10);
+    }
 
-	res.status(200).json({
-		data: { all: req.query.all },
-	});
+    res.status(200).json({
+        data: { all: req.query.all },
+    });
 
-	return next();
+    return next();
 }
 
 module.exports = {
-	info,
-	latency,
-	signUp,
-	signIn,
-	logout,
+    info,
+    latency,
+    signUp,
+    signIn,
+    logout,
 };

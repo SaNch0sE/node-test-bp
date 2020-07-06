@@ -60,5 +60,5 @@ router.post('/signin', controller.signIn);
 router.get('/logout', verifyToken, controller.logout);
 
 module.exports = {
-	router,
+    router,
 };
