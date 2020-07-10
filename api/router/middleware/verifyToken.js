@@ -1,6 +1,14 @@
 const jwt = require('jsonwebtoken');
 const { TIME, KEY } = require('../../../config/config');
 
+/**
+ * @function
+ * @param {express.Request} req
+ * @param {express.Response} res
+ * @param {express.NextFunction} next
+ * @summary authentication middleware
+ * @returns {void}
+ */
 const authenticateJWT = (req, res, next) => {
     const { access, refresh } = req.cookies;
     try {

@@ -1,3 +1,12 @@
+/**
+ * @function
+ * @param {Error} err
+ * @param {express.Request} req
+ * @param {express.Response} res
+ * @param {express.NextFunction} next
+ * @summary logout current or all users
+ * @returns {Function}
+ */
 module.exports = (err, req, res, next) => {
     if (err) {
         if (err.name === 'ValidationError') {
