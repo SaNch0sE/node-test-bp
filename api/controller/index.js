@@ -71,11 +71,7 @@ async function signUp(req, res, next) {
 	user.password = bcrypt.hashSync(user.password, saltRounds);
 
 	const data = await service.signup(user).catch((e) => next(e));
-	const tokens = genTokens({ id: req.body.id });
-	res.cookie('access', tokens.access, { maxAge: TIME.cookieAcc, httpOnly: true });
-	res.cookie('refresh', tokens.refresh, { maxAge: TIME.cookieRef, httpOnly: true });
 	res.status(200).json({
-		token: tokens.access,
 		user: data,
 	});
 
@@ -98,26 +94,21 @@ async function signIn(req, res, next) {
 		return next(error);
 	}
 
-	const response = {
-		statusCode: 400,
-		status: 'Failed, invalid input data',
-	};
 	const user = await service.hash(req.body.id);
 	if (user != null) {
 		const compared = bcrypt.compareSync(req.body.password, user.password);
 		if (compared) {
 			const tokens = genTokens({ id: req.body.id });
 			res.cookie('access', tokens.access, { maxAge: TIME.cookieAcc, httpOnly: true });
-			res.cookie('refresh', tokens.refresh, { maxAge: TIME.cookieRef, httpOnly: true });
-			response.statusCode = 200;
-			response.token = tokens.access;
-			response.status = 'OK';
+			res.status(200).json({ token: tokens.access });
+			return next();
 		}
 	} else {
-		response.status = "Failed, user doesn't exist";
+		res.status(400).json({ status: 'Failed, user doesn\'t exist' });
+		return next();
 	}
 
-	res.status(response.statusCode).json(response);
+	res.status(400).json({ status: 'Failed, invalid input data' });
 	return next();
 }
 
@@ -137,7 +128,6 @@ async function logout(req, res, next) {
 	}
 
 	res.cookie('access', 'none', { maxAge: 0, httpOnly: true });
-	res.cookie('refresh', 'none', { maxAge: 0, httpOnly: true });
 	if (req.query.all === 'true') {
 		process.env.KEY = bcrypt.hashSync(`${new Date().getTime()}_private-Key`, 10);
 	}

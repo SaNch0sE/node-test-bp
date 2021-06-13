@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-ufa7f.mongodb.net/`;
-const MONGODB_DB_MAIN = process.env.DB_NAME;
-const MONGO_URI = `${MONGODB_URI}${MONGODB_DB_MAIN}?retryWrites=true&w=majority`;
+const MONGODB_URI = process.env.DB_URL;
 
 const connectOptions = {
 	// automatically try to reconnect when it loses connection
@@ -19,4 +17,4 @@ const connectOptions = {
 	useUnifiedTopology: true,
 };
 
-module.exports = mongoose.createConnection(MONGO_URI, connectOptions);
+module.exports = mongoose.createConnection(MONGODB_URI, connectOptions);

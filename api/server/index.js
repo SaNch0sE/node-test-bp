@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -11,16 +10,14 @@ const errHandler = require('./middleware/errors');
 
 const app = express();
 
+// enable CORS
+app.use(cors());
+// helps you secure your Express apps by setting various HTTP headers
+app.use(helmet());
 // parse request json bodies
 app.use(bodyParser.json());
 // parse Cookie header and populate req.cookies with an object keyed by the cookie names.
 app.use(cookieParser());
-// returns the compression middleware
-app.use(compression());
-// helps you secure your Express apps by setting various HTTP headers
-app.use(helmet());
-// enable CORS
-app.use(cors());
 // use my router
 app.use(router);
 // custom error handler

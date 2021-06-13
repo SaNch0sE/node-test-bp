@@ -2,8 +2,7 @@
 Database type - mongodb (mongodb Atlas).<br>
 DotEnv (`.env` file) config:
 - <b>KEY</b> - Public key for jwt signing;
-- <b>DB_USER</b> - Database password.
-- <b>DB_PASSWORD</b> - Database password.
+- <b>DB_URL</b> - MongoDB cluster url.
 - <b>PORT</b> - Custom port, default is 3000.
 
 API (JSON):
